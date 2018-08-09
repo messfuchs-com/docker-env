@@ -1,0 +1,32 @@
+version: '3'
+
+services: 
+  apache:
+    image: httpd:2-alpine
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./containers/django/project:/var/www/django/public_html
+      - ./containers/django/logs:/var/www/django/logs
+      - ./containers/react/site/public:/var/www/react/public_html
+      - ./containers/react/logs:/var/www/react/logs
+  db:
+    image: postgres:9-alpine
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./containers/postgresql/data:/var/lib/postgresql/data
+  django:
+    image: django:latest
+    command: python project/manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./containers/django:/usr/src/app
+  frontend:
+    image: react:latest
+    ports: 
+      - '3000:3000'
+    volumes:
+      - ./containers/react:/usr/src/app
