@@ -16,6 +16,7 @@ dev     : Start a normal Django development server.
 bash    : Start a bash shell
 init    : Start manage.py {makemigrations,migrate}
 manage  : Start manage.py
+admin   : Start django-admin.py
 lint    : Run pylint
 python  : Run a python command
 shell   : Start a Django Python shell.
@@ -24,43 +25,51 @@ help    : Show this message
 """
 }
 
+CONTAINER_ADMIN_NAME=${ADMIN_NAME:-admin}
+CONTAINER_ADMIN_MAIL=${ADMIN_MAIL:-"admin@example.com"}
+CONTAINER_ADMIN_PASS=${ADMIN_PASS:-admin}
+CONTAINER_PORT=${PORT:-8000}
+
 do_init() {
-cd project
 python manage.py makemigrations
 python manage.py migrate
-python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('${ADMIN_NAME:-admin}', '${ADMIN_MAIL:-admin@example.com}', '${ADMIN_PASS:-secret}')"
+python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('$CONTAINER_ADMIN_NAME', '$CONTAINER_ADMIN_MAIL', '$CONTAINER_ADMIN_PASS')"
 }
+
+args=${@}
 
 # Run
 case "$1" in
     dev)
 echo "Running Development Server..."
-cd project
-python manage.py runserver 0.0.0.0:${PORT:-8000}
+python manage.py runserver 0.0.0.0:$CONTAINER_PORT
     ;;
     bash)
-/bin/bash "${@:2}"
+/bin/bash "${@:5}"
+    ;;
+    admin)
+adminArgs="${args:6}"
+django-admin.py $adminArgs
     ;;
     manage)
-cd project
-python manage.py "${@:2}"
+manageArgs="${args:7}"
+python manage.py $manageArgs
     ;;
     makemigrations)
-cd project
 python manage.py makemigrations
     ;;
     migrate)
-cd project
 python manage.py migrate
     ;;
     lint)
-pylint "${@:2}"
+lintArgs="${args:5}"
+pylint lintArgs
     ;;
     python)
-python "${@:2}"
+pythonArgs="${args:7}"
+python pythonArgs
     ;;
     shell)
-cd project
 python manage.py shell_plus
     ;;
     uwsgi)

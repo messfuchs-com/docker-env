@@ -23,14 +23,17 @@ help    : Show this message
 }
 
 do_init() {
+  npm install -g create-react-app
   npm install
 }
 
 do_dev() {
-    echo "Running Development Server..."
-    cd site
-    npm start
+  echo "Running Development Server..."
+  npm start
 }
+
+args=${@}
+echo "$args"
 
 # Run
 case "$1" in
@@ -38,7 +41,7 @@ case "$1" in
         do_dev
     ;;
     bash)
-        /bin/bash "${@:2}"
+/bin/sh "${@:5}"
     ;;
     init)
         do_init

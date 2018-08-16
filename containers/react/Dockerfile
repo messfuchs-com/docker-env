@@ -1,10 +1,17 @@
 FROM alpine
 
-RUN apk update && apk add nodejs npm      
+RUN mkdir -p /usr/src/app
+VOLUME [ "/usr/src/app" ]
 
+RUN apk update
+RUN apk add nodejs npm      
+
+ADD ./site /usr/src/app
 WORKDIR /usr/src/app
-ADD . /usr/src/app
 
-RUN npm install -g create-react-app
+ADD ./docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-CMD ["-c"]
+ENTRYPOINT [ "sh", "/usr/local/bin/docker-entrypoint.sh" ]
+
+CMD ["dev"]

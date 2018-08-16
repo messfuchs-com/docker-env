@@ -16,12 +16,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include, url
+from django.conf.urls.i18n import i18n_patterns
+from rest_framework_jwt.views import obtain_jwt_token, verify_jwt_token, refresh_jwt_token
 
-urlpatterns = [
+
+urlpatterns0 = [
     path('admin/', admin.site.urls),
 ]
 
+urlpatterns = i18n_patterns( 
+    path('admin/', admin.site.urls),
+)
+
 urlpatterns += [
     url(r'^api-auth/', include('rest_framework.urls')),
-    url(r'^api/', include('mods.api.urls')),
+    url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^api-token-verify/', verify_jwt_token),
+    url(r'^api-token-refresh/', refresh_jwt_token), 
+    url(r'^api/', include('api.urls')),
 ]

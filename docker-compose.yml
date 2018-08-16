@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 
 services: 
   # apache:
@@ -11,22 +11,26 @@ services:
   #     - ./containers/django/logs:/var/www/django/logs
   #     - ./containers/react/site/public:/var/www/react/public_html
   #     - ./containers/react/logs:/var/www/react/logs
-  db:
+  database:
     image: postgres:9-alpine
     ports:
       - "5432:5433"
     volumes:
       - ./containers/postgresql/data:/var/lib/postgresql/data
-  django:
-    image: django:latest
-    command: python project/manage.py runserver 0.0.0.0:8000
+  backend:
+    image: messfuchs-django:latest
+    # command: python project/manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     volumes:
-      - ./containers/django:/usr/src/app
+      - ./containers/django/project:/usr/src/app
+    depends_on:
+      - database
   frontend:
-    image: react:latest
+    image: messfuchs-react:latest
     ports: 
       - '3000:3000'
     volumes:
-      - ./containers/react:/usr/src/app
+      - ./containers/react/site:/usr/src/app
+    depends_on:
+      - backend

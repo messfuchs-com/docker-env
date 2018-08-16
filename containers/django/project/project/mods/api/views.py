@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from api.models import Point
-from api.serializers import PointSerializer, User, UserSerializer
+from api.serializers import PointSerializer, User, UserSerializer, Revision, RevisionSerializer
 from rest_framework import viewsets, permissions, authentication
 
 # Create your views here.
@@ -17,6 +17,15 @@ class PointViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
+class RevisionViewSet(viewsets.ModelViewSet):
+    """
+    This viewset ist for Revisions
+    """
+    queryset = Revision.objects.all()
+    serializer_class = RevisionSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):

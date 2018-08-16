@@ -1,3 +1,4 @@
 node_modules
 *.pyc
 containers/postgresql/data
+.vscode

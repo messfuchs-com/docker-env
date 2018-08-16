@@ -1,18 +1,25 @@
 FROM python:3-alpine
 ENV PYTHONUNBUFFERED 1
 
-RUN apk update \
-  && apk add --virtual build-deps gcc python3-dev musl-dev \
+RUN mkdir -p /usr/src/app
+VOLUME [ "/usr/src/app" ]
+
+RUN apk update
+RUN apk add --virtual build-deps gcc python3-dev musl-dev \
   && apk add postgresql-dev \
   && pip install psycopg2 \
   && apk del build-deps
+RUN apk add gettext
 
-RUN mkdir -p /usr/src/app
-
-ADD . /usr/src/app
+ADD ./project /usr/src/app
 WORKDIR /usr/src/app
 
-RUN pip install --upgrade pip
+# RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD [ "python", "project/manage.py", "runserver", "0.0.0.0:{$PORT:-8000}"]
+ADD ./docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT [ "sh", "/usr/local/bin/docker-entrypoint.sh" ]
+
+CMD ["dev"]

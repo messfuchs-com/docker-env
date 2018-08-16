@@ -1,37 +1,35 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import axios from 'axios';
+// import axios from 'axios';
+import { connect } from 'react-redux';
+
+import * as actions from './store/actions';
+
+const mapStateToProps = (state) => ({
+  username: state.auth.username,
+  userpass: state.auth.userPass,
+  usertoken: state.auth.userToken,
+  tokenExpirationDate: state.auth.expirationDate
+})
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  onTokenObtain: (username, password) => dispatch(actions.authTokenObtain(username, password)),
+  // onTokenRefresh: (token) => dispatch(actions.authTokenRefresh(token)),
+  onUpdateUsername: (username) => dispatch(actions.authSetUserName(username)),
+  onUpdateUserPassword: (userPass) => dispatch(actions.authSetUserPass(userPass)),
+})
 
 class App extends Component {
-  state = {
-    points: []
-  }
+
   componentDidMount() {
-    console.log("Do some axios")
-    axios.get(
-      "http://172.23.0.3:8000/api/points/",
-      {
-        headers: {
-          'Authorization': 'Token f424cadb8fc8629d0e704f55a38144be3d66a234',
-          'Content-Type': 'application/json'
-        }
-      }
-    ).then(res => {
-      const pointArray = []
-      res.data.forEach(element => {
-        pointArray.push(
-          { name: element.name, owner: element.owner}
-        )
-      });
-      if (pointArray) {
-        this.setState({points: pointArray})
-      }
-      console.log(res)
-    }).catch(err => {
-      console.log(err)
-    })
+    const username = 'admin';
+    const userpass = 'admin';
+    this.props.onUpdateUsername(username);
+    this.props.onUpdateUserPassword(userpass);
+    this.props.onTokenObtain(username, userpass);
   }
+    
   render() {
     return (
       <div className="App">
@@ -42,10 +40,12 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-        <p>ABC</p>
+        <p>User: {this.props.username}</p>
+        <p>Password: {this.props.userpass}</p>
+        <p>Token: {this.props.usertoken}</p>
       </div>
     );
   }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)( App );
