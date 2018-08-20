@@ -7,7 +7,6 @@ import {
   authTokenObtainSaga,
   authTokenRefreshSaga,
   authTokenVerifySaga,
-  authLogoutSaga,
   authTokenCheckExpirationSaga,
 } from './auth';
 
