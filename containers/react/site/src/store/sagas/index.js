@@ -7,6 +7,7 @@ import {
   authTokenObtainSaga,
   authTokenRefreshSaga,
   authTokenVerifySaga,
+  authLogoutSaga,
   authTokenCheckExpirationSaga,
 } from './auth';
 
@@ -17,5 +18,6 @@ export function* watchAuth() {
   yield takeEvery(actionTypes.AUTH_TOKEN_VERIFY, authTokenVerifySaga);
   yield takeEvery(actionTypes.AUTH_TOKEN_CHECK_EXPIRATION, authTokenCheckExpirationSaga);
   yield takeEvery(actionTypes.AUTH_TIMEOUT, authTimeoutSaga);
+  yield takeEvery(actionTypes.AUTH_LOGOUT, authLogoutSaga);
   // yield takeEvery(actionTypes.AUTH_SET_USERTOKEN, authSetUserTokenSaga);
 }

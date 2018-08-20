@@ -12,25 +12,53 @@ services:
   #     - ./containers/react/site/public:/var/www/react/public_html
   #     - ./containers/react/logs:/var/www/react/logs
   database:
+    hostname: database
+    domainname: suite.lan
     image: postgres:9-alpine
     ports:
       - "5432:5433"
     volumes:
       - ./containers/postgresql/data:/var/lib/postgresql/data
+    networks:
+      messwork:
+        aliases:
+          - database.suite.lan
   backend:
+    hostname: backend
+    domainname: suite.lan
     image: messfuchs-django:latest
+    build:
+      context: ./containers/django
+      dockerfile: Dockerfile
     # command: python project/manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     volumes:
       - ./containers/django/project:/usr/src/app
+    networks:
+      messwork:
+        aliases:
+          - backend.suite.lan
     depends_on:
       - database
   frontend:
+    hostname: frontend
+    domainname: suite.lan
     image: messfuchs-react:latest
+    build: 
+      context: ./containers/react
+      dockerfile: Dockerfile
     ports: 
       - '3000:3000'
     volumes:
       - ./containers/react/site:/usr/src/app
+    networks:
+      messwork:
+        aliases:
+          - frontend.suite.lan
     depends_on:
       - backend
+
+networks:
+  messwork:
+    driver: bridge

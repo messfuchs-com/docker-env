@@ -10,5 +10,5 @@ export {
   authTokenRefresh,
   authTokenVerify,
   authLogout,
-  authTimeout
+  authTimeout,
 } from './auth';

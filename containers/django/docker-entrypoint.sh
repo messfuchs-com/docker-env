@@ -31,9 +31,11 @@ CONTAINER_ADMIN_PASS=${ADMIN_PASS:-admin}
 CONTAINER_PORT=${PORT:-8000}
 
 do_init() {
-python manage.py makemigrations
-python manage.py migrate
-python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('$CONTAINER_ADMIN_NAME', '$CONTAINER_ADMIN_MAIL', '$CONTAINER_ADMIN_PASS')"
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py shell -c "from django.contrib.auth.models import User;
+if not User.objects.get(username='$CONTAINER_ADMIN_NAME').exists():
+    User.objects.create_superuser('$CONTAINER_ADMIN_NAME', '$CONTAINER_ADMIN_MAIL', '$CONTAINER_ADMIN_PASS')"
 }
 
 args=${@}
@@ -42,7 +44,7 @@ args=${@}
 case "$1" in
     dev)
 echo "Running Development Server..."
-python manage.py runserver 0.0.0.0:$CONTAINER_PORT
+python3 manage.py runserver 0.0.0.0:$CONTAINER_PORT
     ;;
     bash)
 /bin/bash "${@:5}"
@@ -53,13 +55,13 @@ django-admin.py $adminArgs
     ;;
     manage)
 manageArgs="${args:7}"
-python manage.py $manageArgs
+python3 manage.py $manageArgs
     ;;
     makemigrations)
-python manage.py makemigrations
+python3 manage.py makemigrations
     ;;
     migrate)
-python manage.py migrate
+python3 manage.py migrate
     ;;
     lint)
 lintArgs="${args:5}"
@@ -67,10 +69,10 @@ pylint lintArgs
     ;;
     python)
 pythonArgs="${args:7}"
-python pythonArgs
+python3 pythonArgs
     ;;
     shell)
-python manage.py shell_plus
+python3 manage.py shell_plus
     ;;
     uwsgi)
 echo "Running App (uWSGI)..."
